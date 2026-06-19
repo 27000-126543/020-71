@@ -156,14 +156,23 @@ def analyze_sentiment(
     else:
         emotion_category = EmotionCategory.NEGATIVE_SEVERE
 
+    high_risk_categories = {"personal_attack", "collective_rights", "brand_boycott"}
+    has_high_risk = any(r.category in high_risk_categories for r in risk_reasons)
+
     if emotion_category in (EmotionCategory.POSITIVE, EmotionCategory.NEUTRAL):
-        suggested_action = SuggestedAction.OBSERVE
+        if has_high_risk:
+            suggested_action = SuggestedAction.REVIEW
+        else:
+            suggested_action = SuggestedAction.OBSERVE
     elif emotion_category == EmotionCategory.NEGATIVE_MILD:
-        suggested_action = SuggestedAction.OBSERVE
+        if has_high_risk:
+            suggested_action = SuggestedAction.REVIEW
+        else:
+            suggested_action = SuggestedAction.OBSERVE
     elif emotion_category == EmotionCategory.NEGATIVE_MODERATE:
         suggested_action = SuggestedAction.REVIEW
     else:
-        if any(r.category in ("personal_attack", "collective_rights", "brand_boycott") for r in risk_reasons):
+        if has_high_risk:
             suggested_action = SuggestedAction.BLOCK
         else:
             suggested_action = SuggestedAction.ALERT

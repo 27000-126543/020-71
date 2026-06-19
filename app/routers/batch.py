@@ -150,7 +150,7 @@ async def batch_review(
         if r.emotion_category
         in (EC.NEGATIVE_MODERATE.value, EC.NEGATIVE_SEVERE.value)
     ]
-    neg_records.sort(key=lambda r: r.intensity_score, reverse=True)
+    neg_records.sort(key=lambda r: r.published_at)
     for r in neg_records[:5]:
         igniting.append(
             IgnitingComment(
